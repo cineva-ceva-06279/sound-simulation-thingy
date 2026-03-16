@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doppler Effect Simulation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <section class="hud">
+      <h1>Doppler Effect Simulation</h1>
+      <p>Move with W, A, S, D</p>
+      <label class="speed-control" for="speed">
+        <span>Speed (m/s)</span>
+        <input id="speed" name="speed" type="range" min="5" max="80" step="1" value="32">
+      </label>
+      <output id="speed-value" for="speed">32.00 m/s</output>
+      <label class="speed-toggle" for="observer-speed-of-sound">
+        <input id="observer-speed-of-sound" name="observer-speed-of-sound" type="checkbox">
+        <span>Speed of Sound</span>
+      </label>
+      <section class="spawner" aria-label="Source spawner controls">
+        <h2>Source Spawner</h2>
+        <label for="square-speed">
+          <span>Source Speed (m/s)</span>
+          <input id="square-speed" name="square-speed" type="number" min="0" max="200" step="1" value="18">
+        </label>
+        <label for="square-direction">
+          <span>Direction (deg)</span>
+          <input id="square-direction" name="square-direction" type="number" step="1" value="45">
+        </label>
+        <label for="square-frequency">
+          <span>Sound Frequency (Hz)</span>
+          <input id="square-frequency" name="square-frequency" type="number" min="20" max="20000" step="1" value="440">
+        </label>
+        <button id="spawn-square" type="button">Spawn Source</button>
+        <button id="delete-source" type="button">Delete Source</button>
+        <label class="toggle-option" for="hide-sound-waves">
+          <input id="hide-sound-waves" name="hide-sound-waves" type="checkbox">
+          <span>Hide Sound Waves</span>
+        </label>
+      </section>
+    </section>
+    <section class="telemetry" aria-live="polite">
+      <p id="observer-speed-line">0.00 m/s - Observer Speed;</p>
+      <p id="source-speed-line">0.00 m/s - Source Speed;</p>
+      <p id="relative-speed-line" class="telemetry-strong">0.00 m/s - Relative Speed;</p>
+      <p id="distance-change-line" class="telemetry-strong">0.00 m/s - Distance Change Speed;</p>
+      <p id="shifted-frequency-line" class="telemetry-accent">0.00 Hz - Shifted Frequency.</p>
+    </section>
+    <section id="graph-panel" class="graph-panel">
+      <div class="graph-controls-row">
+        <label class="graph-controls" for="graph-axis">
+          <span>Graph X Axis</span>
+          <select id="graph-axis" name="graph-axis">
+            <option value="time">Time</option>
+            <option value="distance-change-speed">Distance Change Speed</option>
+            <option value="relative-speed">Relative Speed</option>
+            <option value="distance">Distance</option>
+          </select>
+        </label>
+        <button id="reset-graph" class="graph-reset-button" type="button">Reset Graph</button>
+        <button id="minimize-graph" class="graph-minimize-button" type="button">Return to Simulation</button>
+      </div>
+      <canvas id="graph-canvas" aria-label="Shifted frequency graph"></canvas>
+      <p class="graph-hint">Click the graph to expand it.</p>
+    </section>
+    <canvas id="simulation" aria-label="2D movement simulation"></canvas>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

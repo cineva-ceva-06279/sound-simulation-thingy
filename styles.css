@@ -1,0 +1,313 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at top, #1f334f 0%, #0e1624 45%, #05080d 100%);
+  color: #e7edf6;
+}
+
+body {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.app {
+  position: relative;
+  flex: 1;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.hud {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(7, 12, 20, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.telemetry {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(7, 12, 20, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.graph-panel {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 1rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(7, 12, 20, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.graph-panel.expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: 0;
+  background: rgba(4, 8, 14, 0.98);
+}
+
+.graph-controls-row {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.graph-controls {
+  display: grid;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.graph-controls span {
+  font-size: 0.9rem;
+  color: #d8e5f3;
+}
+
+.graph-controls select {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f7fb;
+  color-scheme: dark;
+  font: inherit;
+}
+
+.graph-controls select option {
+  background: #f4f7fb;
+  color: #0b1420;
+}
+
+.graph-reset-button,
+.graph-minimize-button {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f7fb;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.graph-reset-button:hover,
+.graph-minimize-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.graph-minimize-button {
+  display: none;
+}
+
+.graph-panel.expanded .graph-minimize-button {
+  display: inline-block;
+}
+
+#graph-canvas {
+  display: block;
+  width: min(40vw, 380px);
+  max-width: calc(100vw - 4rem);
+  height: 250px;
+  margin-top: 0.75rem;
+  border-radius: 12px;
+  background: rgba(2, 7, 12, 0.86);
+}
+
+.graph-panel.expanded #graph-canvas {
+  width: 100%;
+  max-width: none;
+  height: calc(100vh - 108px);
+  margin-top: 0.9rem;
+  cursor: pointer;
+}
+
+.graph-panel.expanded.is-hovering-point #graph-canvas {
+  cursor: crosshair;
+}
+
+.graph-panel.expanded.is-dragging #graph-canvas {
+  cursor: grabbing;
+}
+
+.graph-hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  color: #a9bbcf;
+}
+
+.graph-panel.expanded .graph-hint {
+  display: none;
+}
+
+.telemetry p {
+  margin: 0;
+  color: #e7edf6;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.telemetry p.telemetry-strong {
+  color: #8fd3ff;
+  font-weight: 700;
+}
+
+.telemetry p.telemetry-accent {
+  color: #ffd84d;
+  font-weight: 700;
+}
+
+.hud h1,
+.hud p {
+  margin: 0;
+}
+
+.hud h1 {
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.hud p {
+  margin-top: 0.35rem;
+  color: #a9bbcf;
+}
+
+.speed-control {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+}
+
+.speed-control span,
+#speed-value {
+  font-size: 0.92rem;
+  color: #d8e5f3;
+}
+
+.speed-control input {
+  width: 220px;
+  accent-color: #ffd166;
+}
+
+#speed-value {
+  display: inline-block;
+  margin-top: 0.45rem;
+}
+
+.speed-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+  color: #d8e5f3;
+}
+
+.speed-toggle span {
+  font-size: 0.92rem;
+}
+
+.speed-toggle input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #8fd3ff;
+}
+
+.speed-control input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spawner {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.spawner h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+.spawner label {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.spawner label.toggle-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.spawner span {
+  font-size: 0.9rem;
+  color: #d8e5f3;
+}
+
+.toggle-option input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #8fd3ff;
+}
+
+.spawner input,
+.spawner button {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+}
+
+.spawner input {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f7fb;
+}
+
+.spawner button {
+  background: #ffd166;
+  color: #17202d;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spawner button:hover {
+  background: #ffe08a;
+}
+
+#simulation {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
