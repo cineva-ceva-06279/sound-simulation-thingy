@@ -15,6 +15,7 @@ const minimizeGraphButton = document.getElementById("minimize-graph");
 const graphCanvas = document.getElementById("graph-canvas");
 const graphCtx = graphCanvas.getContext("2d");
 const squareSpeedInput = document.getElementById("square-speed");
+const squareAccelerationInput = document.getElementById("square-acceleration");
 const squareDirectionInput = document.getElementById("square-direction");
 const squareFrequencyInput = document.getElementById("square-frequency");
 const spawnSquareButton = document.getElementById("spawn-square");
@@ -1146,24 +1147,31 @@ function drawCoordinates() {
 
 async function spawnSquare() {
   const speed = Math.max(0, Number(squareSpeedInput.value) || 0) * unitsPerMeter;
+  const acceleration = (Number(squareAccelerationInput.value) || 0) * unitsPerMeter;
   const directionDegrees = Number(squareDirectionInput.value) || 0;
   const frequency = Math.min(20000, Math.max(20, Number(squareFrequencyInput.value) || 440));
   const directionRadians = directionDegrees * (Math.PI / 180);
+  const directionX = Math.cos(directionRadians);
+  const directionY = Math.sin(directionRadians);
 
   state.square = {
     position: { x: 0, y: 0 },
     velocity: {
-      x: Math.cos(directionRadians) * speed,
-      y: Math.sin(directionRadians) * speed
+      x: directionX * speed,
+      y: directionY * speed
+    },
+    acceleration: {
+      x: directionX * acceleration,
+      y: directionY * acceleration
     },
     directionDegrees,
-    speed,
     frequency,
     size: 34
   };
 
   state.waves = [];
   state.waveSpawnProgress = 0;
+  squareAccelerationInput.value = String(Number(squareAccelerationInput.value) || 0);
   squareFrequencyInput.value = String(frequency);
   await startSquareSound(frequency);
   updateSquareSound();
@@ -1192,6 +1200,8 @@ function frame(currentTime) {
     state.position.y += state.velocity.y * deltaTime;
 
     if (state.square) {
+      state.square.velocity.x += state.square.acceleration.x * deltaTime;
+      state.square.velocity.y += state.square.acceleration.y * deltaTime;
       state.square.position.x += state.square.velocity.x * deltaTime;
       state.square.position.y += state.square.velocity.y * deltaTime;
     }
