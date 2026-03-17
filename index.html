@@ -67,6 +67,23 @@
         <button id="reset-graph" class="graph-reset-button" type="button">Reset Graph</button>
         <button id="minimize-graph" class="graph-minimize-button" type="button">Return to Simulation</button>
       </div>
+      <div class="graph-auto-points-row">
+        <div class="graph-auto-points-actions">
+          <label class="graph-auto-points-toggle" for="auto-graph-points">
+            <input id="auto-graph-points" name="auto-graph-points" type="checkbox">
+            <span>Auto-Points</span>
+          </label>
+          <button id="get-current-auto-point" class="graph-auto-point-button" type="button">Get Current</button>
+        </div>
+        <label class="graph-auto-point-field" for="auto-point-x">
+          <span>X (m)</span>
+          <input id="auto-point-x" name="auto-point-x" type="number" step="0.1" value="0">
+        </label>
+        <label class="graph-auto-point-field" for="auto-point-y">
+          <span>Y (m)</span>
+          <input id="auto-point-y" name="auto-point-y" type="number" step="0.1" value="0">
+        </label>
+      </div>
       <canvas id="graph-canvas" aria-label="Shifted frequency graph"></canvas>
       <p class="graph-hint">Click the graph to expand it.</p>
     </section>

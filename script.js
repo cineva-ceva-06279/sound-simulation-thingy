@@ -12,6 +12,10 @@ const graphPanel = document.getElementById("graph-panel");
 const graphAxisSelect = document.getElementById("graph-axis");
 const resetGraphButton = document.getElementById("reset-graph");
 const minimizeGraphButton = document.getElementById("minimize-graph");
+const autoGraphPointsInput = document.getElementById("auto-graph-points");
+const getCurrentAutoPointButton = document.getElementById("get-current-auto-point");
+const autoPointXInput = document.getElementById("auto-point-x");
+const autoPointYInput = document.getElementById("auto-point-y");
 const graphCanvas = document.getElementById("graph-canvas");
 const graphCtx = graphCanvas.getContext("2d");
 const squareSpeedInput = document.getElementById("square-speed");
@@ -34,6 +38,7 @@ const visualWaveFrequencyDivisor = 48;
 const waveFadeStartRatio = 0.35;
 const graphSampleInterval = 1 / 30;
 const graphSelectionHitRadius = 10;
+const autoGraphPointTolerance = 0.5;
 const graphPadding = {
   top: 22,
   right: 18,
@@ -165,6 +170,85 @@ function getGraphXAxisTitle() {
     default:
       return "Time";
   }
+}
+
+function updateAutoPointInputs() {
+  const disabled = !autoGraphPointsInput.checked;
+  autoPointXInput.disabled = disabled;
+  autoPointYInput.disabled = disabled;
+}
+
+function getAutoGraphPointTarget() {
+  return {
+    x: (Number(autoPointXInput.value) || 0) * unitsPerMeter,
+    y: (Number(autoPointYInput.value) || 0) * unitsPerMeter
+  };
+}
+
+function isNearAutoGraphPoint(position, target) {
+  return Math.hypot(position.x - target.x, position.y - target.y) <= autoGraphPointTolerance;
+}
+
+function didSourcePassAutoGraphPoint(previousPosition, currentPosition, target) {
+  if (isNearAutoGraphPoint(previousPosition, target)) {
+    return false;
+  }
+
+  if (isNearAutoGraphPoint(currentPosition, target)) {
+    return true;
+  }
+
+  const deltaX = currentPosition.x - previousPosition.x;
+  const deltaY = currentPosition.y - previousPosition.y;
+  const segmentLengthSquared = deltaX * deltaX + deltaY * deltaY;
+
+  if (segmentLengthSquared < 0.000001) {
+    return false;
+  }
+
+  const projection =
+    ((target.x - previousPosition.x) * deltaX + (target.y - previousPosition.y) * deltaY) /
+    segmentLengthSquared;
+
+  if (projection <= 0 || projection >= 1) {
+    return false;
+  }
+
+  const closestX = previousPosition.x + deltaX * projection;
+  const closestY = previousPosition.y + deltaY * projection;
+
+  return Math.hypot(target.x - closestX, target.y - closestY) <= autoGraphPointTolerance;
+}
+
+function maybeAddAutoGraphPoint(previousPosition, currentPosition) {
+  if (!state.square || !autoGraphPointsInput.checked) {
+    return;
+  }
+
+  const target = getAutoGraphPointTarget();
+
+  if (didSourcePassAutoGraphPoint(previousPosition, currentPosition, target)) {
+    addGraphPoint();
+  }
+}
+
+function maybeAddSpawnAutoGraphPoint() {
+  if (!state.square || !autoGraphPointsInput.checked) {
+    return;
+  }
+
+  if (isNearAutoGraphPoint(state.square.position, getAutoGraphPointTarget())) {
+    addGraphPoint();
+  }
+}
+
+function setAutoPointInputsFromSource() {
+  if (!state.square) {
+    return;
+  }
+
+  autoPointXInput.value = formatMeters(state.square.position.x);
+  autoPointYInput.value = formatMeters(state.square.position.y);
 }
 
 function clearGraphSelection() {
@@ -1173,6 +1257,7 @@ async function spawnSquare() {
   state.waveSpawnProgress = 0;
   squareAccelerationInput.value = String(Number(squareAccelerationInput.value) || 0);
   squareFrequencyInput.value = String(frequency);
+  maybeAddSpawnAutoGraphPoint();
   await startSquareSound(frequency);
   updateSquareSound();
   renderTelemetry();
@@ -1200,10 +1285,15 @@ function frame(currentTime) {
     state.position.y += state.velocity.y * deltaTime;
 
     if (state.square) {
+      const previousSourcePosition = {
+        x: state.square.position.x,
+        y: state.square.position.y
+      };
       state.square.velocity.x += state.square.acceleration.x * deltaTime;
       state.square.velocity.y += state.square.acceleration.y * deltaTime;
       state.square.position.x += state.square.velocity.x * deltaTime;
       state.square.position.y += state.square.velocity.y * deltaTime;
+      maybeAddAutoGraphPoint(previousSourcePosition, state.square.position);
     }
 
     updateWaves(deltaTime);
@@ -1301,6 +1391,8 @@ hideSoundWavesInput.addEventListener("change", () => {
     state.waveSpawnProgress = 0;
   }
 });
+autoGraphPointsInput.addEventListener("change", updateAutoPointInputs);
+getCurrentAutoPointButton.addEventListener("click", setAutoPointInputsFromSource);
 graphAxisSelect.addEventListener("change", resetGraph);
 resetGraphButton.addEventListener("click", resetGraph);
 minimizeGraphButton.addEventListener("click", () => {
@@ -1323,5 +1415,6 @@ window.addEventListener("beforeunload", stopSquareSound);
 
 resizeCanvas();
 applyObserverSpeedSetting();
+updateAutoPointInputs();
 drawGraph();
 requestAnimationFrame(frame);

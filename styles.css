@@ -78,6 +78,65 @@ body {
   gap: 0.75rem;
 }
 
+.graph-auto-points-row {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+}
+
+.graph-auto-points-actions {
+  display: grid;
+  gap: 0.45rem;
+  align-items: start;
+}
+
+.graph-auto-points-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #d8e5f3;
+  white-space: nowrap;
+}
+
+.graph-auto-point-button {
+  justify-self: start;
+}
+
+.graph-auto-points-toggle span,
+.graph-auto-point-field span {
+  font-size: 0.9rem;
+  color: #d8e5f3;
+}
+
+.graph-auto-points-toggle input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #8fd3ff;
+}
+
+.graph-auto-point-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.graph-auto-point-field input {
+  width: 6.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f7fb;
+  font: inherit;
+}
+
+.graph-auto-point-field input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .graph-controls {
   display: grid;
   gap: 0.35rem;
@@ -105,7 +164,8 @@ body {
 }
 
 .graph-reset-button,
-.graph-minimize-button {
+.graph-minimize-button,
+.graph-auto-point-button {
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   padding: 0.5rem 0.85rem;
@@ -117,7 +177,8 @@ body {
 }
 
 .graph-reset-button:hover,
-.graph-minimize-button:hover {
+.graph-minimize-button:hover,
+.graph-auto-point-button:hover {
   background: rgba(255, 255, 255, 0.14);
 }
 
